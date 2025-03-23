@@ -1,4 +1,4 @@
-module zonee-terraform-provider
+module zone-ee-terraform-provider
 
 go 1.24.1
 

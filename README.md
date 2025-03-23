@@ -34,7 +34,7 @@ export ZONE_API_KEY="your-api-key"
 Or via provider configuration:
 
 ```hcl
-provider "zone" {
+provider "zone-ee" {
     username = "your-username"
     api_key = "your-api-key"
 }
@@ -46,9 +46,9 @@ This provider is still under development. Contributions are welcome!
 ### Building the provider for local development
 ```sh
 $ brew install go terraform
-$ go build -o terraform-provider-zonee
-$ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/local/zonee/1.0.0/$(go env GOOS)_$(go env GOARCH)
-$ cp terraform-provider-zonee ~/.terraform.d/plugins/registry.terraform.io/local/zonee/1.0.0/$(go env GOOS)_$(go env GOARCH)/
+$ go build -o terraform-provider-zone-ee
+$ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/local/zone-ee/1.0.0/$(go env GOOS)_$(go env GOARCH)
+$ cp terraform-provider-zone-ee ~/.terraform.d/plugins/registry.terraform.io/local/zone-ee/1.0.0/$(go env GOOS)_$(go env GOARCH)/
 ```
 
 ## License

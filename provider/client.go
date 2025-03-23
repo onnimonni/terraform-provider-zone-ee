@@ -13,16 +13,16 @@ import (
 type Client struct {
 	BaseURL    string
 	Username   string
-	Password   string
+	ApiKey     string
 	HTTPClient *http.Client
 }
 
 // NewClient creates a new API client
-func NewClient(baseURL, username, password string) *Client {
+func NewClient(baseURL, username, apiKey string) *Client {
 	return &Client{
 		BaseURL:  baseURL,
 		Username: username,
-		Password: password,
+		ApiKey:   apiKey,
 		HTTPClient: &http.Client{
 			Timeout: time.Minute,
 		},
@@ -45,7 +45,7 @@ func (c *Client) doRequest(method, path string, body interface{}) (*http.Respons
 		return nil, err
 	}
 
-	req.SetBasicAuth(c.Username, c.Password)
+	req.SetBasicAuth(c.Username, c.ApiKey)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 

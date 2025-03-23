@@ -1,4 +1,6 @@
 # Ignore terraform test files
 .terraform*
+test-dir/terraform*
 
-terraform-provider-zonee
+# The build product from go
+terraform-provider-zone*

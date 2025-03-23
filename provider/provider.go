@@ -17,24 +17,24 @@ func Provider() *schema.Provider {
 				Description: "Username for zone.ee API authentication",
 				DefaultFunc: schema.EnvDefaultFunc("ZONE_USERNAME", nil),
 			},
-			"password": {
+			"api_key": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Sensitive:   true,
-				Description: "Password for zone.ee API authentication",
-				DefaultFunc: schema.EnvDefaultFunc("ZONE_PASSWORD", nil),
+				Description: "Api key for zone.ee API authentication",
+				DefaultFunc: schema.EnvDefaultFunc("ZONE_API_KEY", nil),
 			},
 			"api_url": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     "https://api.zone.ee/v2",
+				Default:     "https://api.zone.eu/v2",
 				Description: "API endpoint URL for zone.ee",
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"zonee_domain":            resourceDomain(),
-			"zonee_domain_nameserver": resourceDomainNameserver(),
-			"zonee_domain_dnssec":     resourceDomainDNSSEC(),
+			"zone-ee_domain":             resourceDomain(),
+			"zone-ee_domain_nameservers": resourceDomainNameservers(),
+			"zone-ee_domain_dnssec":      resourceDomainDNSSEC(),
 		},
 		DataSourcesMap:       map[string]*schema.Resource{},
 		ConfigureContextFunc: providerConfigure,
@@ -44,11 +44,11 @@ func Provider() *schema.Provider {
 // providerConfigure configures the provider and creates a client
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	username := d.Get("username").(string)
-	password := d.Get("password").(string)
+	api_key := d.Get("api_key").(string)
 	apiURL := d.Get("api_url").(string)
 
 	var diags diag.Diagnostics
 
-	client := NewClient(apiURL, username, password)
+	client := NewClient(apiURL, username, api_key)
 	return client, diags
 }
