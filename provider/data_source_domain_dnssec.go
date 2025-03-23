@@ -8,6 +8,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+// DNSZoneResponse represents the actual API response structure
+type DNSZoneResponse struct {
+	ResourceURL   string `json:"resource_url"`
+	Identificator string `json:"identificator"`
+	Active        bool   `json:"active"`
+	IPv6          bool   `json:"ipv6"`
+	Domain        bool   `json:"domain"`
+	DNSSEC        bool   `json:"dnssec"`
+}
+
 func dataSourceDomainDNSSEC() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceDomainDNSSECRead,
@@ -21,29 +31,6 @@ func dataSourceDomainDNSSEC() *schema.Resource {
 				Type:        schema.TypeBool,
 				Computed:    true,
 				Description: "Whether DNSSEC is enabled",
-			},
-			"keys": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"flags": {
-							Type:        schema.TypeInt,
-							Computed:    true,
-							Description: "DNSSEC key flags (usually 256 for ZSK or 257 for KSK)",
-						},
-						"algorithm": {
-							Type:        schema.TypeInt,
-							Computed:    true,
-							Description: "DNSSEC algorithm number",
-						},
-						"public_key": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "DNSSEC public key",
-						},
-					},
-				},
 			},
 		},
 	}
@@ -61,7 +48,7 @@ func dataSourceDomainDNSSECRead(ctx context.Context, d *schema.ResourceData, m i
 		return diag.FromErr(err)
 	}
 
-	var dnsZones []DNSZone
+	var dnsZones []DNSZoneResponse
 	if err := parseResponse(resp, &dnsZones); err != nil {
 		return diag.FromErr(err)
 	}
@@ -72,21 +59,8 @@ func dataSourceDomainDNSSECRead(ctx context.Context, d *schema.ResourceData, m i
 
 	dnsZone := dnsZones[0]
 	d.SetId(domainName)
-	d.Set("domain", dnsZone.Name)
-	d.Set("enabled", dnsZone.HasDNSSEC)
-
-	if dnsZone.HasDNSSEC && len(dnsZone.DNSSECKeys) > 0 {
-		keys := make([]map[string]interface{}, 0, len(dnsZone.DNSSECKeys))
-		for _, k := range dnsZone.DNSSECKeys {
-			key := map[string]interface{}{
-				"flags":      k.Flags,
-				"algorithm":  k.Algorithm,
-				"public_key": k.PublicKey,
-			}
-			keys = append(keys, key)
-		}
-		d.Set("keys", keys)
-	}
+	d.Set("domain", dnsZone.Identificator)
+	d.Set("enabled", dnsZone.DNSSEC)
 
 	return diags
 }
