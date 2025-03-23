@@ -34,9 +34,10 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"zone-ee_domain":             resourceDomain(),
 			"zone-ee_domain_nameservers": resourceDomainNameservers(),
-			"zone-ee_domain_dnssec":      resourceDomainDNSSEC(),
 		},
-		DataSourcesMap:       map[string]*schema.Resource{},
+		DataSourcesMap: map[string]*schema.Resource{
+			"zone-ee_domain_dnssec": dataSourceDomainDNSSEC(),
+		},
 		ConfigureContextFunc: providerConfigure,
 	}
 }

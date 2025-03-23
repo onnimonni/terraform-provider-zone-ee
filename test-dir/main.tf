@@ -24,3 +24,13 @@ resource "zone-ee_domain_nameservers" "name_servers" {
     "marissa.ns.cloudflare.com"
   ]
 }
+
+# Replace resource with data source to read DNSSEC status
+data "zone-ee_domain_dnssec" "midwork_ee_dnssec" {
+  domain = zone-ee_domain.midwork_ee.name
+}
+
+# Output DNSSEC status for information
+output "dnssec_status" {
+  value = data.zone-ee_domain_dnssec.midwork_ee_dnssec.enabled
+}
