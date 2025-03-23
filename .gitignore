@@ -1,0 +1,4 @@
+# Ignore terraform test files
+.terraform*
+
+terraform-provider-zonee
