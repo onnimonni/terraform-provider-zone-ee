@@ -2,35 +2,50 @@ terraform {
   required_providers {
     zone-ee = {
       source  = "local/zone-ee"
-      version = "1.0.0"
+      version = "0.1.0"
+    }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
     }
   }
 }
 
-provider "zone-ee" {
-  # Your provider configuration here
+variable "cloudflare_account_id" {
+	description = "Cloudflare account id. Zones currently need this to be set"
+	type = string
+	sensitive = true 
 }
 
-resource "zone-ee_domain" "midwork_ee" {
-  name      = "midwork.ee"
-  autorenew = true
+variable "domain" {
+	description = "The domain name to manage"
+	type = string
+}
+
+resource "cloudflare_zone" "zone" {
+	account_id	= var.cloudflare_account_id
+	zone 		    = var.domain
+	plan       	= "free"
+	type       	= "full"
+	jump_start 	= false # Don't scan the existing DNS records
 }
 
 resource "zone-ee_domain_nameservers" "name_servers" {
-  domain = zone-ee_domain.midwork_ee.name
-
-  nameservers = [
-    "houston.ns.cloudflare.com",
-    "marissa.ns.cloudflare.com"
-  ]
+  domain = var.domain
+  nameservers = cloudflare_zone.zone.name_servers
 }
 
-# Replace resource with data source to read DNSSEC status
-data "zone-ee_domain_dnssec" "midwork_ee_dnssec" {
-  domain = zone-ee_domain.midwork_ee.name
+data "zone-ee_domain_dnssec" "domain_dnssec" {
+  domain = var.domain
 }
 
-# Output DNSSEC status for information
-output "dnssec_status" {
-  value = data.zone-ee_domain_dnssec.midwork_ee_dnssec.enabled
+# Throw an error if DNSSEC is not disabled
+# Cloudflare can't activate the name servers when DNSSEC is still activated
+resource "terraform_data" "dnssec_check" {
+  lifecycle {
+    precondition {
+      condition     = !data.zone-ee_domain_dnssec.domain_dnssec.enabled
+      error_message = "🚨 ${var.domain} has DNSSEC enabled. Disable it here https://my.zone.eu/dashboard/en/${var.domain}/domain/dnssec?domain=${var.domain}"
+    }
+  }
 }

@@ -47,8 +47,18 @@ This provider is still under development. Contributions are welcome!
 ```sh
 $ brew install go terraform
 $ go build -o terraform-provider-zone-ee
-$ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/local/zone-ee/1.0.0/$(go env GOOS)_$(go env GOARCH)
-$ cp terraform-provider-zone-ee ~/.terraform.d/plugins/registry.terraform.io/local/zone-ee/1.0.0/$(go env GOOS)_$(go env GOARCH)/
+$ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/local/zone-ee/0.1.0/$(go env GOOS)_$(go env GOARCH)
+$ cp terraform-provider-zone-ee ~/.terraform.d/plugins/registry.terraform.io/local/zone-ee/0.1.0/$(go env GOOS)_$(go env GOARCH)/
+```
+
+### Testing the provider together with Cloudflare
+There's a sample configuration in `test-dir/`.
+
+You need cloudflare and zone API keys and then you can test this by running following commands:
+
+```sh
+$ terraform -chdir=test-dir/ init
+$ CLOUDFLARE_API_TOKEN="XXXXXXXXXX" TF_VAR_cloudflare_account_id="XXXXXX" TF_VAR_domain="yourdomain.ee" ZONE_USERNAME="XXXXXXX" ZONE_API_KEY="XXXXX" terraform -chdir=test-dir/ apply -auto-approve
 ```
 
 ## License
